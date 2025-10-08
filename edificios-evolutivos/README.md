@@ -45,6 +45,7 @@ A vuestro criterio:
 - Tipo de edificio (casa, escuela, oficina, tienda, parlamento...).  
 - Materiales (plastilina, palillos, LEGO, cartón, pajitas, cinta adhesiva...).  
 - Dimensiones aproximadas (Longitud × Altura × Profundidad).
+- Formato de la entrega
 ```
 
 A partir de vuestro proyecto, pasaréis por todas las fases del modelo evolutivo, aplicando cambios según el feedback recibido.
