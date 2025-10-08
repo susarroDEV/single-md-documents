@@ -91,7 +91,6 @@ No se trata de empezar desde cero cada vez, sino de **evolucionar el mismo proye
 
 ## 🗓️ Entregas y evaluación
 
-(Tenemos que concretar con Borja las fechas y el método de entrega).  
 La dinámica se desarrollará durante **dos semanas**, con **cuatro entregas**, una por cada fase, a través del **campus virtual** de la asignatura.  
 
 Solo **un miembro del grupo** hará la entrega, indicando quiénes forman parte del equipo.  
