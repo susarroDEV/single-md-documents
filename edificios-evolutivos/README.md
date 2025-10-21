@@ -3,9 +3,10 @@
 **"Edificios Evolutivas”** es una dinámica práctica para la asignatura **Ingeniería del Software I**.  
 Está organizada por:
 
-- Hugo Lozano  
-- Mario Rosell  
-- Mario González  
+- Hugo Lozano
+- Mario Rosell
+- Mario González
+- Axel Metodiev
 
 ---
 
