@@ -202,3 +202,129 @@ $$
 $$
 
 Se cumple la condición de hold.
+
+Como se ha calculado, las condiciones se cumplen en cada camino y cada etapa. Como se puede apreciar, se ha considerado añadir un R_P en el camino no crítico ya que si no desicronizaríamos los datos del circuito, dejando este de ser funcional.
+
+### 3. Sobre el circuito de la imagen
+
+![Circuito del ejercicio 3](./public/ej3_1.png)
+
+Tiempos y retardos:
+
+![Parámetros del ejercicio 3](./public/ej3_2.png)
+
+#### ¿Podría este circuito funcionar correctamente a $500 MHz$? ¿A qué rangos de frecuencia puede ser funcional?
+
+$$
+T_{clk} = \frac{1}{freq} = \frac{1}{500MHz} = 2 \times 10^{-9}s = 2ns
+$$
+
+Identifiquemos el camino crítico (el otro camino sería el de realimentacion de REG1):
+
+Reg1 - DEC - ADD - Reg2 / Reg3
+
+Evaluemos la condición de setup:
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+(0,15 + 0,6 + 1,4 + 0,2)ns \leq (2ns - (0,15 - 0,2))ns \; \to 2,35ns \leq 1,95ns ?
+$$
+
+Al violarse la condición de setup el circuito no será funcional físicamente. Ahora encontremos la frecuencia máxima:
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq \frac{1}{freq} + skew
+$$
+
+$$
+freq \leq \frac{1}{t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} - skew}
+$$
+
+$$
+freq \leq \frac{1}{(0,15  + 2 + 0,2 + 0,05)ns} \leq \frac{1}{2,4ns} = 416,67 MHz
+$$
+
+Por lo que el circuito solo funcionará a menos o a $416,67 MHz$.
+
+Igualmente evaluaremos la condición de hold:
+
+$$
+t_{clk \to q}^{min} + t_{logica}^{min} \geq t_{hold} + skew
+$$
+
+$$
+0,15ns + 1,1ns \geq 0,1ns + 0ns \to 1,25ns \geq 0,1ns
+$$
+
+Se verifica la condición de hold
+
+#### ¿A qué rango del decodificador funcionará el circuito a $500 MHz$?
+
+Veamos que valores son necesario para que no se viole la condición de setup:
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max}(\text{sin DEC}) + DEC + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+DEC \leq T_{clk} + skew - t_{clk \to q}^{max} - t_{logica}^{max}(\text{sin DEC}) - t_{setup}
+$$
+
+$$
+DEC \leq 2ns - 0,05ns - 0,15ns - 1,4ns - 0,2ns = 0,2ns
+$$
+
+Por tanto, si solo alteramos el retardo del decodificador, para que el circuito funcione deberá ser como máximo de 0,2ns de retardo.
+
+#### Indicar si es posible funcionar a la frecuencia deseada usando pipelining
+
+Para solventar mediante segmentación añadiremos 4 registros a las salidas del decodificador. Evaluamos ahora la condición de setup en las dos etapas.
+
+##### Etapa 1 (setup): Decodificador
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+0,15ns + 0,6ns + 0,2ns \leq 2ns + (0,3 - 0,2)ns \to 0,95ns \leq 2,1ns
+$$
+
+Se verifica la condición de setup en la primera etapa.
+
+##### Etapa 2 (setup): Sumador
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+0,15ns + 1,4ns + 0,2ns \leq 2ns + (0,1 - 0,3)ns \to 1,75ns \leq 1,8ns
+$$
+
+Se verifica la condición de setup en la segunda etapa.
+
+Ahora bien, el camino más corto ya no es el de retroalimentación (el cual no se puede segmentar por ser de feedback), es la primera nueva etapa, evaluemos la condición de hold:
+
+##### Etapa 1 (hold): Decodificador
+
+$$
+t_{clk \to q}^{min} + t_{logica}^{min} \geq t_{hold} + skew
+$$
+
+$$
+0,15ns + 0,6ns \geq 0,1ns + (0,3ns - 0,1ns) \to 0,85ns \geq 0,2ns
+$$
+
+Se verifica la condición de hold en el camino más corto, y, por ende, el circuito es funcional.
