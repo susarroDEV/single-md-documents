@@ -93,10 +93,10 @@ No se trata de empezar desde cero cada vez, sino de **evolucionar el mismo proye
 
 ## 🗓️ Entregas y evaluación
 
-La dinámica se desarrollará durante **dos semanas**, con **cuatro entregas**, una por cada fase, a través del **campus virtual** de la asignatura.  
-
+La dinámica se desarrollará durante **dos semanas**, con **cuatro entregas**, una por cada fase.
 Solo **un miembro del grupo** hará la entrega, indicando quiénes forman parte del equipo.  
 Nosotros os daremos **feedback personalizado** en cada entrega para guiar la evolución del proyecto.
+Mandad vuestras entregas al correo: `margon97@ucm.es`
 
 ---
 
