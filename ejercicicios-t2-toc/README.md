@@ -328,3 +328,343 @@ $$
 $$
 
 Se verifica la condición de hold en el camino más corto, y, por ende, el circuito es funcional.
+
+### 4. Sobre el circuito de la imagen
+
+![Circuito del ejercicio 4](./public/ej4_1.png)
+
+Tiempos y retardos:
+
+![Parámetros del ejercicio 4](./public/ej4_2.png)
+
+#### Identificar el camino crítico y justificar si este circuito podría funcionar a $500 MHz$
+
+Para encontrar el camino crítico evaluaremos las distintas rutas:
+
+* **Ruta 1**: SRAM - MUL - ADD - RDATA1
+* **Ruta 2**: RDATA1 - ADD - RDATA2
+* **Ruta 3**: Contador - ADD - RDATA1
+* **Ruta 4**: RDATA2 - ADD - RDATA2
+
+Se aprecia fácilmente que la **Ruta 1** será el camino crítico, evaluemos ahora las condiciones de setup y hold.
+
+$$
+T_{clk} = \frac{1}{freq} = \frac{1}{500MHz} = 2ns
+$$
+
+Setup:
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+0,15ns + 2,5ns + 1ns + 0,2ns \leq 2ns + (1ns - 0)  \to 3,85ns \leq 3ns
+$$
+
+No se verifica la condición así que el circuito ya **NO** es funcional.
+
+Hold (ruta 4):
+
+$$
+t_{clk \to q}^{min} + t_{logica}^{min} \geq t_{hold} + skew
+$$
+
+$$
+0,15ns + 1ns \geq 0,1ns + 0 \to 1,15ns \geq 0,1ns
+$$
+
+Se verifica la condición de hold.
+
+#### ¿A qué rango del multiplicador funcionará el circuito a $500 MHz$?
+
+Veamos que valores son necesario para que no se viole la condición de setup:
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max}(\text{sin MUL}) + MUL + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+MUL \leq T_{clk} + skew - t_{clk \to q}^{max} - t_{logica}^{max}(\text{sin MUL}) - t_{setup}
+$$
+
+$$
+MUL \leq 2ns + 1ns - 0,15ns - 2,5ns - 0,2ns = 0,15ns
+$$
+
+Por tanto, si solo alteramos el retardo del multiplicador, para que el circuito funcione deberá ser como máximo de 0,15ns de retardo.
+
+#### ¿Sería posible segmentar el circuito y asegurar su funcionamiento?
+
+El punto donde se debería segmentar el circuito sería tras el multiplicador. Para evitar la desincronización se añadirá un registro de alineación a la salida del contador.
+
+Ahora analicemos la condición de setup únicamente, pues, la de hold ya fue verificada y no sé ha alterado dicha ruta:
+
+##### Verificación etapa 1
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+0,15ns + 2,5ns + 0,2ns \leq 2ns + (1ns - 0)  \to 2,85ns \leq 3ns
+$$
+
+Se verifica para esta primera etapa
+
+##### Verificación etapa 2
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+0,15ns + 1ns + 0,2ns \leq 2ns + 0  \to 1,35ns \leq 2ns
+$$
+
+Se verifica para esta segunda etapa
+
+Por tanto, se puede justificar que con esa segmentación sería posible que el circuito funcionase a la frecuencia deseada.
+
+### 5. Sobre el circuito de la imagen. Analizar si existen violaciones de tiempo. ¿Cuál es el margen del registro de destino? Idear una solución para una frecuencia de 200Mhz
+
+![Circuito del ejercicio 5](./public/ej5.png)
+
+Tiempos y retardos del circuito:
+
+* $t_{clk \to q} = 0,4 ns$
+* $t_{setup} = 0,25 ns$
+* $t_{hold} = 0,1 ns$
+* $freq = 100MHz$
+
+#### Verificación de condiciones
+
+$$
+T_{clk} = \frac{1}{freq} = \frac{1}{100MHz} = 10ns
+$$
+
+##### Setup
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+0,4ns + 3,1ns + 2,1ns + 0,25ns \leq 10ns + (0,25ns - 1,75ns) \; ? \to 5,85ns \leq 8,5ns \; ?
+$$
+
+No se viola la condicón de setup.
+
+##### Hold
+
+$$
+t_{clk \to q}^{min} + t_{logica}^{min} \geq t_{hold} + skew
+$$
+
+$$
+0,4ns + 0,5ns + 2ns \geq 0,1ns + (0,25ns - 1ns) \; ? \to 2,9ns \geq -0,65ns
+$$
+
+No se viola la condicón de hold.
+
+#### Margen del registro de destino
+
+##### Margen de setup
+
+$$
+margen_{setup} = T_{clk} + skew - (t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} + jitter)
+$$
+
+$$
+margen_{setup} = 10ns +  (0,25ns - 1,75ns) - (3,1ns + 2,1ns + 0,25ns + 0) = 3,05ns
+$$
+
+##### Margen de hold
+
+$$
+margen_{hold} = t_{clk \to q}^{min} + t_{logica}^{min} - (skew + t_{hold} + jitter)
+$$
+
+$$
+margen_{hold} = 0,5ns + 2,0ns - ((0,25ns - 1ns) + 0,1ns + 0) = 3,15ns
+$$
+
+#### Rediseño para $200 MHz$
+
+Para asegurar la funcionalidad a la nueva frecuencia crearemos un pipeline detrás de los primeros componentes lógicos, así podremos cumplir la violación de setup y nos aseguraremos de que los datos esten alineados.
+
+$$
+T_{clk} = \frac{1}{freq} = \frac{1}{200MHz} = 5ns
+$$
+
+##### Setup en primera etapa
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+0,15ns + 3,1ns + 0,25ns \leq 5ns + (0,45ns - 1,75ns) \to 3,5ns \leq 3,7ns
+$$
+
+Se cumple la condición.
+
+##### Setup en segunda etapa
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+0,15ns + 2,1ns + 0,25ns \leq 5ns + (0,25ns - 0,45ns) \to 2,5ns \leq 4,8ns
+$$
+
+Se cumple la condición.
+
+##### Hold en primera etapa
+
+$$
+t_{clk \to q}^{min} + t_{logica}^{min} \geq t_{hold} + skew
+$$
+
+$$
+0,15ns + 0,5ns \leq 0,1ns + (0,45ns - 1ns) \to 0,65ns \leq -0,45ns
+$$
+
+Se cumple la condición.
+
+##### Hold en segunda etapa
+
+$$
+t_{clk \to q}^{min} + t_{logica}^{min} \geq t_{hold} + skew
+$$
+
+$$
+0,15ns + 2ns \leq 0,1ns + (0,25ns - 0,45ns) \to 2,15ns \leq -0,1ns
+$$
+
+Se cumple la condición.
+
+Una vez verificadas todas las condiciones podemos afirmar que añadiendo los dos pipeline el circuito será funcional a la frecuencia deseada.
+
+### 6. Sobre el circuito de la imagen
+
+![Circuito del ejercicio 6](./public/ej6_1.png)
+
+Tiempos y retardos del circuito:
+
+* $t_{clk \to q} = 0,12 ns$
+* $t_{setup} = 0,1 ns$
+* $t_{hold} = 0,05 ns$
+
+#### Indicar los márgenes de setup para una frecuencia de $250 MHz$ y la verificación de las condiciones de setup
+
+Los registros de destino son FF3, FF4 y FF5.
+
+$$
+T_{clk} = \frac{1}{freq} = \frac{1}{250MHz} = 4ns
+$$
+
+##### Margen de FF3
+
+$$
+margen_{setup} = T_{clk} + skew - (t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} + jitter)
+$$
+
+$$
+margen_{setup} = 4ns +  (0,11ns - 0,2ns) - (0,12ns + 1,3ns + 1,7ns + 0,1ns + 0) = 0,69ns
+$$
+
+##### Margen de FF4
+
+$$
+margen_{setup} = T_{clk} + skew - (t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} + jitter)
+$$
+
+$$
+margen_{setup} = 4ns +  (0,11ns - 0,2ns) - (0,12ns + 0,9ns + 1,6ns + 0,1ns + 0) = 1,19ns
+$$
+
+##### Margen de FF5
+
+$$
+margen_{setup} = T_{clk} + skew - (t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} + jitter)
+$$
+
+$$
+margen_{setup} = 4ns +  (0,02ns - 0,03ns) - (0,12ns + 1ns + 1,5ns + 1,1ns + 0,1ns + 0) = 0,17ns
+$$
+
+El camino crítico (FF5) tiene margen positivo (0,17) por lo tanto no habrá violación de conficto de setup
+
+#### Hallar la frecuencia máxima
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq \frac{1}{freq} + skew
+$$
+
+$$
+freq \leq \frac{1}{t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} - skew}
+$$
+
+$$
+freq \leq \frac{1}{(0,12 + 1 + 1,5 + 1,1 + 0,1 - (0,11 - 0,2))ns} \leq \frac{1}{3,91ns} = 255,75 MHz
+$$
+
+El circuito podrá ser funcional físicamente a $255,75 MHz$ o menos.
+
+#### Encontrar mejora estructural (segmentación) para funcionar a $500MHz$
+
+Para evitar la violación de setup se colocarán dos tramos registros, uno a las dos entradas de la última lógica previa a FF5 y otro intermedio previo a la nube inferior (conectada con la nube superior izquierda y FF4). El skew se despreciará, pues desconocemos el desfase para los nuevos registros de segmentación. Evaluaremos ahora de nuevo las tres etapas nuevas:
+
+$$
+T_{clk} = \frac{1}{freq} = \frac{1}{500MHz} = 2ns
+$$
+
+##### Etapa 1 (FF3 - REGP1)
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+0,15ns + 1.0ns + 0,1ns \leq  2ns \to 1,25ns \leq 2ns
+$$
+
+Se cumple la condición de setup para la primera etapa.
+
+##### Etapa 2 (REGP1 - REGP2)
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+0,15ns + 1.5ns + 0,1ns \leq  2ns \to 1,75ns \leq 2ns
+$$
+
+Se cumple la condición de setup para la segunda etapa.
+
+##### Etapa 3 (REGP2 - FF5)
+
+$$
+t_{clk \to q}^{max} + t_{logica}^{max} + t_{setup} \leq T_{clk} + skew
+$$
+
+$$
+0,15ns + 1.1ns + 0,1ns \leq  2ns \to 1,35ns \leq 2ns
+$$
+
+Se cumple la condición de setup para la tercera etapa
+
+Aquí se añade un dibujo con los registros de segmentación y alineado añadidos.
+
+![Esquema con los nuevos registros añadidos](./public/ej6_2.png)
